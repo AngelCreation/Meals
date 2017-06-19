@@ -1,0 +1,92 @@
+package ios.service;
+
+import java.io.InputStream;
+import java.util.List;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+
+import org.json.JSONObject;
+
+import com.sun.jersey.multipart.FormDataParam;
+
+
+
+@Path("mealsinfo")
+public class MealsMobileService {
+	BusinessModel businessModel = new BusinessModel();
+	
+	@GET
+	@Path("/getAllMeals")
+	@Produces("application/json")
+	public List<MealsBean> getAllMeals() {
+		return businessModel.getAllMeals();
+	}
+	
+	@POST
+	@Path("/addMeal")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces("application/json")
+	public MealsBean addMeal(MealsBean mealsBean){
+		return businessModel.addMeal(mealsBean);
+	}
+	
+	
+//	@POST
+//	@Path("/addMealWithImage")
+//	@Consumes(MediaType.MULTIPART_FORM_DATA)
+//	@Produces("application/json")
+//	public MealsBean addMealWithImage(@FormDataParam("name") String name, @FormDataParam("rating") int rating,@FormDataParam("filename")String filename) {
+//		System.out.println("ADD WITH MEAL IMAGE METHOD CALLING...");
+//		//return businessModel.addMealWithImage(name,rating,in,filename);	
+//		System.out.println("NAME :: " + name);
+//		System.out.println("rating :: " + rating);
+//		//System.out.println("file :: " + in);
+//		System.out.println("fileName :: " + filename);
+//		return null;
+//	}
+	
+	
+	@POST
+	@Path("/addMealWithImage")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces("application/json")
+	public MealsBean addMealWithImage(@FormDataParam("name") String name, @FormDataParam("rating") int rating,@FormDataParam("file") InputStream in,@FormDataParam("filename")String filename) {
+		System.out.println("ADD WITH MEAL IMAGE METHOD CALLING...");
+		System.out.println("NAME :: " + name);
+		System.out.println("rating :: " + rating);
+		System.out.println("file :: " + in);
+		System.out.println("fileName :: " + filename);
+		
+		return businessModel.addMealWithImage(name,rating,in,filename);	
+//		System.out.println("NAME :: " + name);
+//		System.out.println("rating :: " + rating);
+//		System.out.println("file :: " + in);
+//		System.out.println("fileName :: " + filename);
+//		return null;
+	}
+	
+	@POST
+	@Path("/updateMeal")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces("application/json")
+	public MealsBean updateMeal(@FormDataParam("id") int id,@FormDataParam("name") String name,@FormDataParam("rating") int rating,@FormDataParam("file") InputStream in,@FormDataParam("filename") String filename){
+		return businessModel.updateMeal(id,name,rating,in,filename);
+	}
+	
+	@POST
+	@Path("/deleteMeal")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces("application/json")
+	public MealsBean deleteMeal(MealsBean mealsBean){
+		return businessModel.deleteMeal(mealsBean);
+	}
+	
+	
+}
