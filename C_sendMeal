@@ -1,0 +1,99 @@
+package com.samyak;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.file.Files;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.jackson.JacksonConverterFactory;
+
+import java.io.File;
+
+public class sendMeal {
+	
+	private static String BASE_URL = "http://10.100.112.91:6090/MealsWebService/";	
+	
+	public static void main(String[] args){
+		try {
+			// creates a unique boundary based on time stamp
+			String boundary = "===" + System.currentTimeMillis() + "===";
+			URL url = new URL(BASE_URL + "rest/mealsinfo/addMealWithImage");
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setDoOutput(true);	//indicates post method
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Content-Type",
+	                "multipart/form-data; boundary=" + boundary);
+			
+			File fi = new File("D:\\logo.png");
+			byte[] fileContent = Files.readAllBytes(fi.toPath());
+			
+			String lineEnd = "\r\n";
+			int rating = 4;
+			
+			DataOutputStream outputStream = new DataOutputStream(conn.getOutputStream());
+			
+			outputStream.writeBytes("Content-Disposition: form-data; name=\"" + "name" + "\"" + lineEnd);
+            outputStream.writeBytes("Content-Type: text/plain" + lineEnd);
+            outputStream.writeBytes(lineEnd);
+            outputStream.writeBytes("Pizza");
+            outputStream.writeBytes(lineEnd);
+			
+            outputStream = new DataOutputStream(conn.getOutputStream());
+//			outputStream.writeBytes("Content-Disposition: form-data; name=\"" + "Pizza" + "\"; rating=\"" + rating + "\"; file=\"" + fileContent + "\";filename=\"" + fi.getName() + "\"" );
+			outputStream.writeBytes("Content-Disposition: form-data; file=\"" + fileContent + "\";filename=\"" + fi.getName() + "\"" );
+			outputStream.writeBytes("Content-Type: image/png" + lineEnd);
+			outputStream.writeBytes("Content-Transfer-Encoding: binary" + lineEnd);
+
+			conn.disconnect();
+			
+			
+/*			//working
+			String filePath = "D:" +File.separator +"logo.png";
+			String fileNameSegments[] = filePath.split(Pattern.quote(File.separator));
+			String fileName = fileNameSegments[fileNameSegments.length - 1];
+			
+			File file = new File(filePath);
+			
+			RequestBody PartItemName = RequestBody.create(MediaType.parse("text/plain"), "Pizza");
+			RequestBody PartRating = RequestBody.create(MediaType.parse("text/plain"), "3");
+			RequestBody PartFileName = RequestBody.create(MediaType.parse("text/plain"), fileName);*/
+			//RequestBody PartFile = RequestBody.create(MediaType.parse("*/*"), file);
+			/*MultipartBody.Part PartFile = MultipartBody.Part.createFormData("file", file.getName(),
+					RequestBody.create(MediaType.parse("image/*"), file));
+			
+			OkHttpClient client = new OkHttpClient
+	                .Builder()
+	                .readTimeout(300, TimeUnit.SECONDS)
+	                .connectTimeout(40, TimeUnit.SECONDS)
+	                .build();
+			
+			MealsApi mealsapi = new Retrofit.Builder().client(client).addConverterFactory(JacksonConverterFactory.create()).baseUrl(BASE_URL).build().create(MealsApi.class);
+			
+			Call<MealsBean> uploadfile = mealsapi.UploadFile(PartItemName, PartRating, PartFile, PartFileName);
+			Response<MealsBean> response= uploadfile.execute();
+			
+			if(response.code() == 200) {
+				MealsBean mealsBean = response.body();
+				System.out.println(mealsBean.getResult());
+			} else {
+				System.out.println("Error...!!!");
+			}*/
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+	}
+}
